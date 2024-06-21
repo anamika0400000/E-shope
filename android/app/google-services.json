@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "5881658993",
+    "project_id": "e-comers-b44f8",
+    "storage_bucket": "e-comers-b44f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5881658993:android:fc3beec047d38a563be5d0",
+        "android_client_info": {
+          "package_name": "com.example.ecomars"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoBXdWHeg6yekJ0vTkDgSOgeOqK3luomU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
