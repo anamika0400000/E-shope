@@ -1,5 +1,6 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commers/Home.dart';
 import 'package:flutter/material.dart';
 
 class AddProduct extends StatefulWidget {
@@ -9,94 +10,125 @@ class AddProduct extends StatefulWidget {
   State<AddProduct> createState() => _AddProductState();
 }
 
-var check;
-
 class _AddProductState extends State<AddProduct> {
-  TextEditingController name = TextEditingController();
-  TextEditingController imagePath = TextEditingController();
-  TextEditingController price = TextEditingController();
-  TextEditingController isonsale = TextEditingController();
-  TextEditingController dis = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController imagePathController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController isOnSaleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   CollectionReference products =
       FirebaseFirestore.instance.collection('products');
-  Future<void> addproducts() {
-    return products
-        .add({
-          'name': name.text,
-          'Price': price.text,
-          'imagePath': imagePath.text,
-          'isOnSale': isonsale.text,
-          'Description': dis.text
-        })
-        .then(
-          (value) => check = 1,
-        )
-        .catchError((error) => print("Failed to add Product: $error"));
+  var check;
+
+  Future<void> addProducts() async {
+    try {
+      await products.add({
+        'name': nameController.text,
+        'Price': priceController.text,
+        'imagePath': imagePathController.text,
+        'isOnSale': isOnSaleController.text,
+        'Description': descriptionController.text,
+      });
+      setState(() {
+        check = 1;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Product added successfully!')),
+      );
+    } catch (error) {
+      print("Failed to add product: $error");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text('Add Product'),
+        backgroundColor: Colors.redAccent,
       ),
-      body: Container(
-        padding: EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            SizedBox(
-              height: 15,
-            ),
+            SizedBox(height: 15),
             TextField(
-              controller: name,
+              controller: nameController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 labelText: 'Name',
+                labelStyle: TextStyle(color: Colors.redAccent),
               ),
             ),
             SizedBox(height: 10),
             TextField(
-              controller: price,
+              controller: priceController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 labelText: 'Price',
+                labelStyle: TextStyle(color: Colors.redAccent),
               ),
             ),
             SizedBox(height: 10),
             TextField(
-              controller: imagePath,
+              controller: imagePathController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 labelText: 'Image Path',
+                labelStyle: TextStyle(color: Colors.redAccent),
               ),
             ),
             SizedBox(height: 10),
             TextField(
-              controller: isonsale,
+              controller: isOnSaleController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'IsOnSale',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                labelText: 'Is On Sale',
+                labelStyle: TextStyle(color: Colors.redAccent),
               ),
             ),
             SizedBox(height: 10),
             TextField(
-              controller: dis,
+              controller: descriptionController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 labelText: 'Description',
+                labelStyle: TextStyle(color: Colors.redAccent),
               ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
-                onPressed: () {
-                  addproducts();
-                  if (check == 1) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Product added successfuly!')),
-                    );
-                  }
-                },
-                child: Text('Add'))
+              onPressed: addProducts,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text('Add'),
+            ),
           ],
         ),
       ),

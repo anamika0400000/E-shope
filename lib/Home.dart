@@ -1,21 +1,30 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commers/Add.dart';
 import 'package:e_commers/Login.dart';
 import 'package:e_commers/cart.dart';
+import 'package:e_commers/productinfo.dart';
+import 'package:e_commers/productcard.dart';
+import 'package:e_commers/productgrid.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  // get product => null;
-  List product = [];
+  final String? userId;
+  final List? cart;
+  HomePage({this.userId, this.cart});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text('Home'),
+        backgroundColor: Colors.redAccent,
+        shadowColor: Colors.black54,
         actions: [
           IconButton(
-            icon: Icon(Icons.add_shopping_cart_sharp),
+            icon: Icon(Icons.add_shopping_cart_sharp, color: Colors.white),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return AddProduct();
@@ -23,17 +32,15 @@ class HomePage extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return Text(
-                  'Comming Soon...',
-                );
+                return MyCartpage(cartList: cart);
               }));
             },
           ),
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return LoginPage();
@@ -42,13 +49,21 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          FiltersSection(),
-          Expanded(
-            child: ProductGrid(),
-          ),
-        ],
+      body: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 0, 0, 0),
+        ),
+        child: Column(
+          children: [
+            FiltersSection(),
+            Expanded(
+              child: ProductGrid(
+                cart: cart,
+                userid: userId!,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -62,51 +77,15 @@ class FiltersSection extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "Product categories",
+            "Product Categories",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class ProductGrid extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Calculate crossAxisCount and childAspectRatio based on screen width
-        int crossAxisCount = constraints.maxWidth > 1000 ? 3 : 2;
-        double childAspectRatio = (constraints.maxWidth / crossAxisCount) / 500;
-
-        return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('products').snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-
-            final products = snapshot.data!.docs.map((doc) {
-              return Product.fromDocument(doc);
-            }).toList();
-
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                childAspectRatio: childAspectRatio,
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                return ProductCard(product: products[index]);
-              },
-            );
-          },
-        );
-      },
     );
   }
 }
@@ -117,73 +96,25 @@ class Product {
   final String imagePath;
   final String isOnSale;
   final String diss;
+  final String id;
 
-  Product(
-      {required this.name,
-      required this.Price,
-      required this.imagePath,
-      required this.diss,
-      required this.isOnSale});
+  Product({
+    required this.id,
+    required this.name,
+    required this.Price,
+    required this.imagePath,
+    required this.diss,
+    required this.isOnSale,
+  });
 
   factory Product.fromDocument(DocumentSnapshot doc) {
     return Product(
+      id: doc.id,
       name: doc['name'],
       Price: doc['Price'],
       imagePath: doc['imagePath'],
       isOnSale: doc['isOnSale'],
       diss: doc['Description'],
-    );
-  }
-}
-
-class ProductCard extends StatelessWidget {
-  final Product product;
-
-  ProductCard({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          Image.network(
-            product.imagePath,
-            height: 270,
-            width: 250,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Icon(Icons.image_search_rounded,
-                  size: 200); // Show a placeholder or error icon
-            },
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Text(product.name),
-          SizedBox(
-            height: 5,
-          ),
-          Text("\$${product.Price}"),
-          SizedBox(
-            height: 5,
-          ),
-          // if (product.isOnSale == "true")
-          Text(
-            "Sale!",
-            style: TextStyle(color: Colors.red),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          OutlinedButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return CartPage(product: product);
-                }));
-              },
-              child: Text('Add to cart'))
-        ],
-      ),
     );
   }
 }
